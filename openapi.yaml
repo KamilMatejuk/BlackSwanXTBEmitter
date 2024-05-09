@@ -1,0 +1,109 @@
+openapi: "3.0.0"
+info:
+  title: XTB Emitter API
+  version: '0.1'
+paths:
+  /price/range/{tokenPair}/{interval}/{startTime}/{endTime}:
+    get:
+      operationId: main.get_price_for_timerange
+      responses:
+        200:
+          description: get a list of prices for timerange
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    price:
+                      type: number
+                      format: float
+                    timestamp:
+                      type: integer
+        401:
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvalidRequest"
+      parameters:
+        - name: tokenPair
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: interval
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: startTime
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: endTime
+          in: path
+          required: true
+          schema:
+            type: integer
+  /indicators/range/{tokenPair}/{interval}/{startTime}/{endTime}/{indicator}:
+    get:
+      operationId: main.get_indicators_for_timerange
+      responses:
+        200:
+          description: get a list of specified indicators for timerange
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    indicator:
+                      type: number
+                      format: float
+                    timestamp:
+                      type: integer
+        401:
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvalidRequest"
+      parameters:
+        - name: tokenPair
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: interval
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: startTime
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: endTime
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: indicator
+          in: path
+          required: true
+          schema:
+            type: string
+components:
+  schemas:
+    InvalidRequest:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: string

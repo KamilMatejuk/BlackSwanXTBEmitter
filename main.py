@@ -4,7 +4,7 @@ from flask import jsonify
 from decouple import Config, RepositoryEnv
 from flask_socketio import SocketIO
 
-from .validate import validate_tokenpair, validate_interval, validate_times, validate_indicator
+from src.validate import validate_tokenpair, validate_interval, validate_times, validate_indicator
 
 
 def get_price_for_timerange(

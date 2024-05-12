@@ -6,7 +6,6 @@ ALLOWED_TOKENPAIRS = [
     'UAH/PLN',
     'RUB/PLN',
 ]
-
 ALLOWED_INTERVALS = [ '1d', '1h', '1m' ]
 
 

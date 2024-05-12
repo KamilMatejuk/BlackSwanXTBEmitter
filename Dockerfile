@@ -11,6 +11,7 @@ COPY src/*.py src/
 COPY *.py .
 COPY openapi.yaml .
 COPY config.json .
-COPY .env.local .
+COPY .env* .
 
-CMD ["python3", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "50001"]
+# CMD ["python3", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "50001"]
+CMD ["python3", "src/connect.py"]

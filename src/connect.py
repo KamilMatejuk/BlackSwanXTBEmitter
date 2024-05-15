@@ -26,9 +26,15 @@ class WebSocketClient:
         self.websocket = connect(self.url)
         if LOG: print(f'Created client for {self.url}')
     
-    def close(self):
+    def __enter__(self):
+        self.ssid = self.run('login', dict(userId=USER_ID, password=USER_PASSWORD))['streamSessionId']
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
         self.websocket.close()
-    
+        if exc_type is not None: raise RuntimeError(exc_value)
+        return False
+
     def get_base_url(self, demo: bool, stream: bool) -> str:
         # http://developers.xstore.pro/documentation/#communication-with-the-xstation-api
         slug1 = 'demo' if demo else 'real'
@@ -64,38 +70,28 @@ class WebSocketClient:
             if 'returnData' in msg: msg = msg['returnData']
             if fields is None: return msg
             assert len(fields) > 0, f'If fields are selected, cannot be of len 0'
-            result = [self._extract_field(msg, f) for f in fields]
-            if len(result) == 1: return result[0]
-            return result
+            return [self._extract_fields(i, fields) for i in msg]
         except json.JSONDecodeError as ex:
             print(f'Failed parsing response "{msg}": {ex}')
             return None
     
-    def _extract_field(self, data: dict | list, field: str) -> list:
+    def _extract_fields(self, data: dict, fields: list[str]) -> list:
         data = data.copy()
-        for part in field.split('.'):
-            if isinstance(data, dict): data = data[part]
-            elif isinstance(data, (list, tuple)): data = data[int(part)]
-        return data
+        return {k: v for k, v in data.items() if k in fields}
         
-    def login(self):
-        return self.run('login', dict(userId=USER_ID, password=USER_PASSWORD), ['streamSessionId'])
 
 
 if __name__ == '__main__':
-    client = WebSocketClient(demo=True, stream=False)
-    ssid = client.login()
+    with WebSocketClient(demo=True, stream=False) as client:
     
-    # data = client.run('getCalendar')
-    # data = pd.DataFrame(data)
-    # data['time'] = pd.to_datetime(data['time'], unit='ms')
-    # print(data.head(5))
-    
-    # data = client.run('getNews', dict(
-    #     start=int(datetime.datetime(2024, 1, 1).timestamp()) * 1000,
-    #     end=int(datetime.datetime(2024, 2, 1).timestamp()) * 1000))
-    # data = pd.DataFrame(data)
-    # data['time'] = pd.to_datetime(data['time'], unit='ms')
-    # print(data.head(5))
-
-    client.close()
+        data = client.run('getCalendar')
+        data = pd.DataFrame(data)
+        data['time'] = pd.to_datetime(data['time'], unit='ms')
+        print(data.head(5))
+        
+        data = client.run('getNews', dict(
+            start=int(datetime.datetime(2024, 1, 1).timestamp()) * 1000,
+            end=int(datetime.datetime(2024, 2, 1).timestamp()) * 1000))
+        data = pd.DataFrame(data)
+        data['time'] = pd.to_datetime(data['time'], unit='ms')
+        print(data.head(5))

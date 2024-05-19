@@ -70,6 +70,7 @@ class WebSocketClient:
             if 'returnData' in msg: msg = msg['returnData']
             if fields is None: return msg
             assert len(fields) > 0, f'If fields are selected, cannot be of len 0'
+            if isinstance(msg, dict): msg = [msg]
             return [self._extract_fields(i, fields) for i in msg]
         except json.JSONDecodeError as ex:
             print(f'Failed parsing response "{msg}": {ex}')
@@ -77,7 +78,7 @@ class WebSocketClient:
     
     def _extract_fields(self, data: dict, fields: list[str]) -> list:
         data = data.copy()
-        return {k: v for k, v in data.items() if k in fields}
+        return {k: data[k] if k in data else None for k in fields}
         
 
 

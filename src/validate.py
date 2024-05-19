@@ -1,10 +1,10 @@
 ALLOWED_TOKENPAIRS = [
-    'USD/PLN',
-    'CHF/PLN',
-    'CAD/PLN',
-    'EUR/PLN',
-    'UAH/PLN',
-    'RUB/PLN',
+    'USDPLN',
+    'CHFPLN',
+    # 'CADPLN',
+    'EURPLN',
+    # 'UAHPLN',
+    # 'RUBPLN',
 ]
 ALLOWED_INTERVALS = [ '1d', '1h', '1m' ]
 
